@@ -33,7 +33,8 @@ of indexing domain-specific document text:
 - Break text into appropriately sized chunks (if needed) 
 - Generate vector embeddings (a numeric representation of the text
   that represents the semantic information in the text)
-- Store the chunks indexed by embedding into a database for retrieval.
+- Store the chunks indexed by embedding into a persistent database for
+  retrieval.
 
 This example uses a PDF version of The Federalist Papers as source
 document, but there are additional langchain document ingesting tools
@@ -41,8 +42,23 @@ for Word documents and many other document types. You can directly
 use the langchain `Document` object inside your custom text
 ingestion code.
 
-The code for converting the PDF document into text and breaking
-it into page-level chunks is in `index_documents.py`:
+Document ingesting tools can and do store metadata along with each
+chunk of text in the langchain `Document` object. In the case of the
+`PyPDFLOader` it saves the name of the PDF file and the page number
+of the chunk within the PDF file. You can add your own metadata
+to document chunks before you persist them.
+
+It is not necessary to use the same language model for generating
+vector embedding indexes that is used for generating responses. In our
+case we are using a much small `all-MiniLM-L6-v2` model from
+HuggingFace to generate the embedding for indexing. It **is**
+necessary to use the same embeddings model for the retrieval part of
+the process as was used to create the persisted vector embeddings, so
+you will see this same model used in the Testing Retrieval section and
+in the full retrieval chain and chatbot.
+
+The code for converting the PDF document into text and breaking it
+into page-level chunks is in `index_documents.py`:
 
 ```{python}
 from langchain.document_loaders import PyPDFLoader
@@ -74,7 +90,9 @@ def generate_embed_index(docs, collection_name, persist_dir):
 ```
 
 Running the `index_documents.py` program will create the `doc_index`
-directory with persisted vector embeddings.
+directory with persisted vector embeddings. These embeddings are
+already created in this repository, but can be deleted and re-created
+if you want to index a different set of documents.
 
 ```
 python index_documents.py
@@ -82,9 +100,9 @@ python index_documents.py
 
 ## Testing Retrieval
 
-The goal is to have the indexed documents searched as part of the
-the LLM interaction, but you can also see how various queries
-match against your document store using code like this:
+The eventual goal is to have the indexed documents searched as part of
+the the LLM interaction, but you can also test how various queries
+match against your document store. Here is some example code:
 
 ```
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -99,14 +117,16 @@ embeddings = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
 db = Chroma(embedding_function=embeddings,
                 collection_name=COLLECTION_NAME,
                 persist_directory=PERSIST_DIR)
+prompt = "How should government responsibility be divided between the states and the federal government?"
 docs_scores = db.similarity_seardch_with_score(prompt)
 for doc, score in docs_scores:
     print(f"similarity_score: {score}")
     pprint.pprint(doc)
 ```
 
-The `streamlit` program `search_index.py` can be run to 
-graphically see the matched documents.
+There is similar code in the `streamlit` user interface in
+`search_index.py` that can be run to graphically see the matched
+documents.
 
 ```
 streamlit run search_index.py
@@ -122,7 +142,6 @@ The chain for interaction with the LLM has the following pieces:
 - A 'ConversationalBufferWindowMemory` that provides a level of memory so
   the chatbot can refer to earlier parts of the conversation.
 - The LLM chat interface, `AzureChatOpenAI` in our case.
-
 
 ```
 embeddings = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
