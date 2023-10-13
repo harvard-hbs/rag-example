@@ -113,24 +113,33 @@ COLLECTION_NAME = "federalist_papers"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 PERSIST_DIR = "doc_index"
 
+# Same model as used to create persisted embedding index
 embeddings = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
+
+# Access persisted embeddings
 db = Chroma(embedding_function=embeddings,
                 collection_name=COLLECTION_NAME,
                 persist_directory=PERSIST_DIR)
+                
+# Example query to for similarity indexing
 prompt = "How should government responsibility be divided between the states and the federal government?"
+
+# Display matched documents and similarity scores
 docs_scores = db.similarity_seardch_with_score(prompt)
 for doc, score in docs_scores:
     print(f"similarity_score: {score}")
     pprint.pprint(doc)
 ```
 
-There is similar code in the `streamlit` user interface in
+This same approach is used in the `streamlit` user interface in
 `search_index.py` that can be run to graphically see the matched
 documents.
 
 ```
 streamlit run search_index.py
 ```
+
+!(images/search_index_image.png)
 
 ## Creating the full chain
 
