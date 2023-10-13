@@ -114,7 +114,43 @@ streamlit run search_index.py
 
 ## Creating the full chain
 
+The chain for interaction with the LLM has the following pieces:
 
+- A `ConversationalRetrievalChain` which connects to the persisted vector
+  database index and looks up document chunks to pass to the LLM with the
+  appropriate prompting.
+- A 'ConversationalBufferWindowMemory` that provides a level of memory so
+  the chatbot can refer to earlier parts of the conversation.
+- The LLM chat interface, `AzureChatOpenAI` in our case.
+
+
+```
+embeddings = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
+db = Chroma(embedding_function=embeddings,
+                collection_name=COLLECTION_NAME,
+                persist_directory=PERSIST_DIR)
+retriever = db.as_retriever()
+
+llm = AzureChatOpenAI(temperature=0.5,
+                      deployment_name=model_name,
+                      verbose=VERBOSE)
+                      
+memory = ConversationBufferWindowMemory(
+    memory_key="chat_history",
+    output_key="answer",
+    return_messages=True,
+    window_size=MEMORY_WINDOW_SIZE)
+
+query_chain = ConversationalRetrievalChain.from_llm(
+    llm=llm,
+    memory=memory,
+    retriever=retriever,
+    verbose=VERBOSE,
+    return_source_documents=True)
+
+prompt = "How should government responsibility be divided between the states and the federal government?"
+query_response = query_chain({"queston": prompt})
+```
 
 ## Streamlit Chat UI
 
