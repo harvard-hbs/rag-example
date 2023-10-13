@@ -139,7 +139,7 @@ documents.
 streamlit run search_index.py
 ```
 
-![](images/search_index_image.png)
+<kbd>![Image of document matching UI](images/search_index_image.png)</kbd>
 
 ## Creating the full chain
 
