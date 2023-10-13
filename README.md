@@ -35,7 +35,14 @@ of indexing domain-specific document text:
   that represents the semantic information in the text)
 - Store the chunks indexed by embedding into a database for retrieval.
 
-This is done in the `index_documents.py` program with this code:
+This example uses a PDF version of The Federalist Papers as source
+document, but there are additional langchain document ingesting tools
+for Word documents and many other document types. You can directly
+use the langchain `Document` object inside your custom text
+ingestion code.
+
+The code for converting the PDF document into text and breaking
+it into page-level chunks is in `index_documents.py`:
 
 ```{python}
 from langchain.document_loaders import PyPDFLoader
@@ -66,11 +73,54 @@ def generate_embed_index(docs, collection_name, persist_dir):
     return db
 ```
 
-## Integrating Retrieval
+Running the `index_documents.py` program will create the `doc_index`
+directory with persisted vector embeddings.
 
-## Memory
+```
+python index_documents.py
+```
+
+## Testing Retrieval
+
+The goal is to have the indexed documents searched as part of the
+the LLM interaction, but you can also see how various queries
+match against your document store using code like this:
+
+```
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
+import pprint
+
+COLLECTION_NAME = "federalist_papers"
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+PERSIST_DIR = "doc_index"
+
+embeddings = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
+db = Chroma(embedding_function=embeddings,
+                collection_name=COLLECTION_NAME,
+                persist_directory=PERSIST_DIR)
+docs_scores = db.similarity_seardch_with_score(prompt)
+for doc, score in docs_scores:
+    print(f"similarity_score: {score}")
+    pprint.pprint(doc)
+```
+
+The `streamlit` program `search_index.py` can be run to 
+graphically see the matched documents.
+
+```
+streamlit run search_index.py
+```
+
+## Creating the full chain
+
+
 
 ## Streamlit Chat UI
+
+```
+streamlit run document_chatbot.py
+```
 
 
 
