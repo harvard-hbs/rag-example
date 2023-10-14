@@ -186,6 +186,6 @@ query_response = query_chain({"queston": prompt})
 streamlit run document_chatbot.py
 ```
 
-
+<kbd>![Image of document chatbot UI](images/document_chatbot_image.png)</kbd>
 
 
