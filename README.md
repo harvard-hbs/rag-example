@@ -153,22 +153,27 @@ The chain for interaction with the LLM has the following pieces:
 - The LLM chat interface, `AzureChatOpenAI` in our case.
 
 ```
+# Access persisted embeddings and expose through langchain retriever
 embeddings = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
 db = Chroma(embedding_function=embeddings,
                 collection_name=COLLECTION_NAME,
                 persist_directory=PERSIST_DIR)
 retriever = db.as_retriever()
 
+# This can be any LLM supported by LangChain
 llm = AzureChatOpenAI(temperature=0.5,
                       deployment_name=model_name,
                       verbose=VERBOSE)
-                      
+
+# Establish a memory buffer for conversational continuity
 memory = ConversationBufferWindowMemory(
     memory_key="chat_history",
     output_key="answer",
     return_messages=True,
     window_size=MEMORY_WINDOW_SIZE)
 
+# Put together all of the components into the full
+# chain with memory and retrieval-agumented generation
 query_chain = ConversationalRetrievalChain.from_llm(
     llm=llm,
     memory=memory,
