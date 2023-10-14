@@ -1,3 +1,8 @@
+"""
+    Interactive UI running against a large language model with
+    retrieval-augmented generation and memory.
+"""
+
 import streamlit as st
 import os
 
@@ -18,6 +23,7 @@ COLLECTION_NAME = "federalist_papers"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 PERSIST_DIR = "doc_index"
 
+# Size of memory window
 MEMORY_WINDOW_SIZE = 10
 
 ANSWER_ROLE = "Chatbot"
@@ -49,6 +55,7 @@ def get_embed_retriever():
     retriever = db.as_retriever()
     return retriever
 
+# Shared/cached globals
 embeddings = load_embeddings()
 llm = load_llm()
 retriever = get_embed_retriever()
