@@ -1,9 +1,9 @@
 # Retrieval-Augmented Generation (RAG) Example
 
 This repository contains an example of code for demonstrating
-retrieval-augmented generation or RAG which provides a mechanism for
-incorporating domain-specific content into interactions with large
-language models (LLMs).
+retrieval-augmented generation (RAG) which provides a mechanism for
+incorporating domain-specific content into generative AI interactions
+with large language models (LLMs).
 
 ## LangChain
 
