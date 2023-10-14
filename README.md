@@ -187,6 +187,11 @@ query_response = query_chain({"queston": prompt})
 
 ## Streamlit Chat UI
 
+The chatbot demonstration user interface uses the
+[Streamlit](https://streamlit.io/) framework, the `st.chat_message`
+and `st.chat_input` components, and its ability to support multi-user
+sessions to interact with the conversational retrieval chain. 
+
 ```
 streamlit run document_chatbot.py
 ```
