@@ -19,7 +19,8 @@ PLACE_HOLDER = "Your message"
 # Cached shared objects
 @st.cache_resource
 def load_embeddings():
-    embeddings = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL,
+                                       multi_process=False)
     return embeddings
 
 @st.cache_resource
