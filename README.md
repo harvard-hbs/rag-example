@@ -122,20 +122,24 @@ embeddings = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
 
 # Access persisted embeddings
 db = Chroma(embedding_function=embeddings,
-                collection_name=COLLECTION_NAME,
-                persist_directory=PERSIST_DIR)
-                
+            collection_name=COLLECTION_NAME,
+            persist_directory=PERSIST_DIR)
+
 # Example query to for similarity indexing
-prompt = "How should government responsibility be divided between the states and the federal government?"
+prompt = ("How should government responsibility be divided between "
+          "the states and the federal government?")
 
 # Display matched documents and similarity scores
-docs_scores = db.similarity_seardch_with_score(prompt)
+print(f"Finding document matches for '{prompt}'")
+docs_scores = db.similarity_search_with_score(prompt)
 for doc, score in docs_scores:
-    print(f"similarity_score: {score}")
-    pprint.pprint(doc)
+    print(f"\nSimilarity score (lower is better): {score}")
+    print(doc.metadata)
+    print(doc.page_content)
 ```
 
-This same approach is used in the `streamlit` user interface in
+There is an included `search_index.py` script that demonstrates this
+code. The same approach is used in the `streamlit` user interface in
 `search_index.py` that can be run to graphically see the matched
 documents.
 
