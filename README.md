@@ -160,6 +160,9 @@ The chain for interaction with the LLM has the following pieces:
   the chatbot can refer to earlier parts of the conversation.
 - The LLM chat interface, `AzureChatOpenAI` in our case.
 
+The `document_chatbot.py` script demonstrates the creation of the full
+retrieval chain and the invokation of the chain from prompt to response.
+
 ```
 # Access persisted embeddings and expose through langchain retriever
 embeddings = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
@@ -168,7 +171,9 @@ db = Chroma(embedding_function=embeddings,
                 persist_directory=PERSIST_DIR)
 retriever = db.as_retriever()
 
-# This can be any LLM supported by LangChain
+# This version is for AzureOpenAI. Change this function to use
+# a different LLM API
+model_name= os.getenv("OPENAI_MODEL_NAME")
 llm = AzureChatOpenAI(temperature=0.5,
                       deployment_name=model_name,
                       verbose=VERBOSE)
@@ -189,8 +194,10 @@ query_chain = ConversationalRetrievalChain.from_llm(
     verbose=VERBOSE,
     return_source_documents=True)
 
-prompt = "How should government responsibility be divided between the states and the federal government?"
-query_response = query_chain({"queston": prompt})
+prompt = ("How should government responsibility be divided between "
+          "the states and the federal government?")
+query_response = query_chain({"question": prompt})
+pprint.pprint(query_response)
 ```
 
 ## Streamlit Chat UI
