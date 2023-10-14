@@ -7,7 +7,7 @@ with large language models (LLMs).
 
 <img src="images/rag_data_flow_image.png"
      alt="RAG data flow diagram"
-     width="300"/>
+     width="500"/>
 
 ## LangChain
 
