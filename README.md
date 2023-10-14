@@ -5,6 +5,8 @@ retrieval-augmented generation (RAG) which provides a mechanism for
 incorporating domain-specific content into generative AI interactions
 with large language models (LLMs).
 
+![RAG data flow diagram](images/rag_data_flow_image.png)
+
 ## LangChain
 
 This project depends on the open source
