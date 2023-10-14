@@ -20,27 +20,29 @@ PERSIST_DIR = "doc_index"
 # Size of memory window
 MEMORY_WINDOW_SIZE = 10
 
+
 def main():
     # Access persisted embeddings and expose through langchain retriever
-    embeddings = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
-    db = Chroma(embedding_function=embeddings,
-                    collection_name=COLLECTION_NAME,
-                    persist_directory=PERSIST_DIR)
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+    db = Chroma(
+        embedding_function=embeddings,
+        collection_name=COLLECTION_NAME,
+        persist_directory=PERSIST_DIR,
+    )
     retriever = db.as_retriever()
 
     # This version is for AzureOpenAI. Change this function to use
     # a different LLM API
-    model_name= os.getenv("OPENAI_MODEL_NAME")
-    llm = AzureChatOpenAI(temperature=0.5,
-                          deployment_name=model_name,
-                          verbose=VERBOSE)
+    model_name = os.getenv("OPENAI_MODEL_NAME")
+    llm = AzureChatOpenAI(temperature=0.5, deployment_name=model_name, verbose=VERBOSE)
 
     # Establish a memory buffer for conversational continuity
     memory = ConversationBufferWindowMemory(
         memory_key="chat_history",
         output_key="answer",
         return_messages=True,
-        window_size=MEMORY_WINDOW_SIZE)
+        window_size=MEMORY_WINDOW_SIZE,
+    )
 
     # Put together all of the components into the full
     # chain with memory and retrieval-agumented generation
@@ -49,12 +51,16 @@ def main():
         memory=memory,
         retriever=retriever,
         verbose=VERBOSE,
-        return_source_documents=True)
+        return_source_documents=True,
+    )
 
-    prompt = ("How should government responsibility be divided between "
-              "the states and the federal government?")
+    prompt = (
+        "How should government responsibility be divided between "
+        "the states and the federal government?"
+    )
     query_response = query_chain({"question": prompt})
     pprint.pprint(query_response)
+
 
 if __name__ == "__main__":
     main()

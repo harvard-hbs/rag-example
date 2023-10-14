@@ -13,6 +13,7 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferWindowMemory
 
 from streamlit.logger import get_logger
+
 logger = get_logger(__name__)
 
 # Log full text sent to LLM
@@ -31,79 +32,90 @@ FIRST_MESSAGE = "How can I help you?"
 QUESTION_ROLE = "User"
 PLACE_HOLDER = "Your message"
 
+
 # Cached shared objects
 @st.cache_resource
 def load_embeddings():
-    embeds = HuggingFaceEmbeddings(model_name = EMBEDDING_MODEL)
+    embeds = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
     return embeds
+
 
 @st.cache_resource
 def load_llm():
     # This version is for AzureOpenAI. Change this function to use
     # a different LLM API
     model_name = os.getenv("OPENAI_MODEL_NAME")
-    model = AzureChatOpenAI(temperature=0.5,
-                            deployment_name=model_name,
-                            verbose=VERBOSE)
+    model = AzureChatOpenAI(
+        temperature=0.5, deployment_name=model_name, verbose=VERBOSE
+    )
     return model
+
 
 @st.cache_resource
 def get_embed_retriever():
-    db = Chroma(embedding_function=embeddings,
-                collection_name=COLLECTION_NAME,
-                persist_directory=PERSIST_DIR)
+    db = Chroma(
+        embedding_function=embeddings,
+        collection_name=COLLECTION_NAME,
+        persist_directory=PERSIST_DIR,
+    )
     retriever = db.as_retriever()
     return retriever
+
 
 # Shared/cached globals
 embeddings = load_embeddings()
 llm = load_llm()
 retriever = get_embed_retriever()
 
+
 def save_message(role, content, sources=None):
     logger.info(f"message: {role} - '{content}'")
-    msg = {"role": role,
-           "content": content,
-           "sources": sources}
+    msg = {"role": role, "content": content, "sources": sources}
     st.session_state["messages"].append(msg)
     return msg
+
 
 def source_description(md):
     descr = f"{md['source']}, Page {md['page']}"
     return descr
 
+
 def write_message(msg):
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
         if msg["sources"]:
-              st.write(", ".join([source_description(md)
-                                  for md in msg["sources"]]))
+            st.write(", ".join([source_description(md) for md in msg["sources"]]))
+
 
 st.title("Document Chatbot")
 
-st.write("""This conversational interface allows you to interact with
-indexed content, in this case, The Federalist Papers.""")
+st.write(
+    """This conversational interface allows you to interact with
+indexed content, in this case, The Federalist Papers."""
+)
 
 if "query_chain" not in st.session_state:
     memory = ConversationBufferWindowMemory(
         memory_key="chat_history",
         output_key="answer",
         return_messages=True,
-        window_size=MEMORY_WINDOW_SIZE)
+        window_size=MEMORY_WINDOW_SIZE,
+    )
     st.session_state["query_chain"] = ConversationalRetrievalChain.from_llm(
         llm=llm,
         memory=memory,
         retriever=retriever,
         verbose=VERBOSE,
-        return_source_documents=True)    
+        return_source_documents=True,
+    )
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
     save_message(ANSWER_ROLE, FIRST_MESSAGE)
-    
+
 for msg in st.session_state["messages"]:
     write_message(msg)
-    
+
 if prompt := st.chat_input(PLACE_HOLDER):
     msg = save_message(QUESTION_ROLE, prompt)
     write_message(msg)

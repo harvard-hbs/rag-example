@@ -5,6 +5,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 
 from streamlit.logger import get_logger
+
 logger = get_logger(__name__)
 
 COLLECTION_NAME = "federalist_papers"
@@ -16,30 +17,34 @@ FIRST_MESSAGE = "Enter text to find document matches."
 QUESTION_ROLE = "Searcher"
 PLACE_HOLDER = "Your message"
 
+
 # Cached shared objects
 @st.cache_resource
 def load_embeddings():
-    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL,
-                                       multi_process=False)
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL, multi_process=False)
     return embeddings
+
 
 @st.cache_resource
 def get_embed_db():
-    db = Chroma(embedding_function=embeddings,
-                collection_name=COLLECTION_NAME,
-                persist_directory=PERSIST_DIR)
+    db = Chroma(
+        embedding_function=embeddings,
+        collection_name=COLLECTION_NAME,
+        persist_directory=PERSIST_DIR,
+    )
     return db
+
 
 embeddings = load_embeddings()
 db = get_embed_db()
 
+
 def save_message(role, content, sources=None):
     logger.info(f"message: {role} - '{content}'")
-    msg = {"role": role,
-           "content": content,
-           "sources": sources}
+    msg = {"role": role, "content": content, "sources": sources}
     st.session_state["messages"].append(msg)
     return msg
+
 
 def write_message(msg):
     with st.chat_message(msg["role"]):
@@ -49,15 +54,16 @@ def write_message(msg):
                 st.text(pprint.pformat(doc.metadata))
                 st.write(doc.page_content)
 
+
 st.title("Show Document Matches")
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
     save_message(ANSWER_ROLE, FIRST_MESSAGE)
-    
+
 for msg in st.session_state["messages"]:
     write_message(msg)
-    
+
 if prompt := st.chat_input(PLACE_HOLDER):
     msg = save_message(QUESTION_ROLE, prompt)
     write_message(msg)
