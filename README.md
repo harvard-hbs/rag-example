@@ -136,7 +136,7 @@ This same approach is used in the `streamlit` user interface in
 documents.
 
 ```
-streamlit run search_index.py
+streamlit run search_index_ui.py
 ```
 
 <kbd>![Image of document matching UI](images/search_index_image.png)</kbd>
@@ -193,7 +193,7 @@ and `st.chat_input` components, and its ability to support multi-user
 sessions to interact with the conversational retrieval chain. 
 
 ```
-streamlit run document_chatbot.py
+streamlit run document_chatbot_ui.py
 ```
 
 <kbd>![Image of document chatbot UI](images/document_chatbot_image.png)</kbd>
