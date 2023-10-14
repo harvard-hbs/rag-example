@@ -9,6 +9,14 @@ content into generative AI interactions with large language models
      alt="RAG data flow diagram"
      width="500"/>
 
+## Code Listing
+
+- `document_chatbot.py` - Short example of full retrieval chain and query
+- `document_chatbot_ui.py` - A Streamlit application for interacting with retrieval chain
+- `index_documents.py` - Script to generate persistent vector embeddings for source documents
+- `search_index.py` - Short example showing vector embedding document chunk search
+- `search_index_ui.py` - A streamlit application to show matching documents for a query
+
 ## LangChain
 
 This project depends on the open source
