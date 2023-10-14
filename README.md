@@ -1,9 +1,9 @@
 # Retrieval-Augmented Generation (RAG) Example
 
-This repository contains an example of code for demonstrating
-retrieval-augmented generation (RAG) which provides a mechanism for
-incorporating domain-specific content into generative AI interactions
-with large language models (LLMs).
+This repository contains code for demonstrating retrieval-augmented
+generation (RAG), a mechanism for incorporating domain-specific
+content into generative AI interactions with large language models
+(LLMs).
 
 <img src="images/rag_data_flow_image.png"
      alt="RAG data flow diagram"
@@ -21,45 +21,56 @@ abstractions and orchestration on top of the these features (among others):
 - Memory support
 - Multi-stage pipelines/chains integrating all features and multiple invokation
 
+The following specifics can be easily changed to other formats,
+models, and providers as needed:
+
+- Domain document format, converter, and splitter: PDF and `PyPDFLoader`
+- Choice of vector embedding provider and model: Huggingface `all-MiniLM-L6-v2`
+- Choice of vector embedding persistence database: Chroma
+- Choice of Large Language Model provider and model: Azure OpenAI GPT-4
+
 ## Document Indexing
 
-Document indexing and vector embedding provides a cost-effective
-strategy for integrating domain-specific information into large
-language model interactions. It allows for domain-driven behavior on
-top of general purpose LLMs&mdash;the most common case&mdash; but is
-consistent and compatible for use with special purpose or fine-tuned
-LLMs.
+Document indexing by generated vector embeddings provides a
+cost-effective strategy for integrating domain-specific information
+into large language model interactions. It allows for domain-driven
+behavior on top of general purpose LLMs&mdash;the most common
+case&mdash;and is consistent and compatible with special purpose and
+fine-tuned LLMs.
 
-The basic idea of the approach is to go through a pre-processing step
-of indexing domain-specific document text:
+The first step in setting up RAG is to perform a pre-processing step
+to index the domain-specific document text:
 
 - Convert documents into pure text (if needed)
-- Break text into appropriately sized chunks (if needed) 
+- Break text into appropriately sized chunks
 - Generate vector embeddings (a numeric representation of the text
   that represents the semantic information in the text)
 - Store the chunks indexed by embedding into a persistent database for
-  retrieval.
+  matchiing and retrieval.
 
-This example uses a PDF version of The Federalist Papers as source
-document, but there are additional langchain document ingesting tools
-for Word documents and many other document types. You can directly
-use the langchain `Document` object inside your custom text
-ingestion code.
+This example uses a PDF document of [The Federalist
+Papers](https://en.wikipedia.org/wiki/The_Federalist_Papers) as the
+source document, but there are additional langchain document ingesting
+tools for Word documents and many other document types. You can also
+use the langchain `Document` object inside your custom text ingestion
+code.
 
-Document ingesting tools can and do store metadata along with each
-chunk of text in the langchain `Document` object. In the case of the
-`PyPDFLOader` it saves the name of the PDF file and the page number
-of the chunk within the PDF file. You can add your own metadata
-to document chunks before you persist them.
+Document ingesting tools store metadata along with each chunk of text
+in the langchain `Document` object. In the case of the `PyPDFLOader`
+it saves the name of the PDF file and the page number of the chunk
+within the PDF file. You can add your own metadata to document chunks
+before you persist them and the metadata can be used by the chain and
+calling applications, for example, to provide a reference link to the
+materials used for generation.
 
 It is not necessary to use the same language model for generating
-vector embedding indexes that is used for generating responses. In our
-case we are using a much small `all-MiniLM-L6-v2` model from
-HuggingFace to generate the embedding for indexing. It **is**
-necessary to use the same embeddings model for the retrieval part of
-the process as was used to create the persisted vector embeddings, so
-you will see this same model used in the Testing Retrieval section and
-in the full retrieval chain and chatbot.
+vector embedding indexes that is used for generating the final textual
+response. In our case we are using a much smaller and less
+resources-intensive HuggingFace model called `all-MiniLM-L6-v2`.  It
+**is** necessary to use the same embeddings model for the retrieval
+part of the process that was used to create the persisted vector
+embeddings, so you will see this same model used in the Testing
+Retrieval section and in the full retrieval chain and chatbot.
 
 The code for converting the PDF document into text and breaking it
 into page-level chunks is in `index_documents.py`:
@@ -140,7 +151,7 @@ for doc, score in docs_scores:
 
 There is an included `search_index.py` script that demonstrates this
 code. The same approach is used in the `streamlit` user interface in
-`search_index.py` that can be run to graphically see the matched
+`search_index_ui.py` that can be run to graphically see the matched
 documents.
 
 ```
