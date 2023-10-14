@@ -56,7 +56,7 @@ use the langchain `Document` object inside your custom text ingestion
 code.
 
 Document ingesting tools store metadata along with each chunk of text
-in the langchain `Document` object. In the case of the `PyPDFLOader`
+in the langchain `Document` object. In the case of the `PyPDFLoader`
 it saves the name of the PDF file and the page number of the chunk
 within the PDF file. You can add your own metadata to document chunks
 before you persist them and the metadata can be used by the chain and
@@ -107,7 +107,8 @@ def generate_embed_index(docs, collection_name, persist_dir):
 Running the `index_documents.py` program will create the `doc_index`
 directory with persisted vector embeddings. These embeddings are
 already created in this repository, but can be deleted and re-created
-if you want to index a different set of documents.
+if you want to rerun the indexing or index a different set of
+documents.
 
 ```
 python index_documents.py
@@ -150,9 +151,9 @@ for doc, score in docs_scores:
 ```
 
 There is an included `search_index.py` script that demonstrates this
-code. The same approach is used in the `streamlit` user interface in
+code. The same approach is used in the `streamlit` user interface
 `search_index_ui.py` that can be run to graphically see the matched
-documents.
+documents as seen below.
 
 ```
 streamlit run search_index_ui.py
@@ -167,12 +168,14 @@ The chain for interaction with the LLM has the following pieces:
 - A `ConversationalRetrievalChain` which connects to the persisted vector
   database index and looks up document chunks to pass to the LLM with the
   appropriate prompting.
-- A 'ConversationalBufferWindowMemory` that provides a level of memory so
-  the chatbot can refer to earlier parts of the conversation.
+- A `ConversationalBufferWindowMemory` that provides a level of
+  conversational context so the chatbot can refer to earlier parts of
+  the conversation.
 - The LLM chat interface, `AzureChatOpenAI` in our case.
 
 The `document_chatbot.py` script demonstrates the creation of the full
-retrieval chain and the invokation of the chain from prompt to response.
+retrieval chain and the invokation of the chain from prompt to response and
+the relevant code is shown here.
 
 ```
 # Access persisted embeddings and expose through langchain retriever
