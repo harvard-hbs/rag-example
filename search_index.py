@@ -2,7 +2,6 @@
 
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
-import pprint
 
 COLLECTION_NAME = "federalist_papers"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
