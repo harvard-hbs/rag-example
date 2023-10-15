@@ -91,7 +91,8 @@ embeddings, so you will see this same model used in the Testing
 Retrieval section and in the full retrieval chain and chatbot.
 
 The code for converting the PDF document into text and breaking it
-into page-level chunks is in `index_documents.py`:
+into page-level chunks is in
+[`index_documents.py`](index_documents.py):
 
 ```{python}
 from langchain.document_loaders import PyPDFLoader
@@ -122,11 +123,11 @@ def generate_embed_index(docs, collection_name, persist_dir):
     return db
 ```
 
-Running the `index_documents.py` program will create the `doc_index`
-directory with persisted vector embeddings. These embeddings are
-already created in this repository, but can be deleted and re-created
-if you want to rerun the indexing or index a different set of
-documents.
+Running the [`index_documents.py`](index_documents.py) program will
+create the `doc_index` directory with persisted vector
+embeddings. These embeddings are already created in this repository,
+but can be deleted and re-created if you want to rerun the indexing or
+index a different set of documents.
 
 ```
 python index_documents.py
@@ -167,10 +168,10 @@ for doc, score in docs_scores:
     print(doc.page_content)
 ```
 
-There is an included `search_index.py` script that demonstrates this
-code. The same approach is used in the `streamlit` user interface
-`search_index_ui.py` that can be run to graphically see the matched
-documents as seen below.
+There is an included [`search_index.py`](search_index.py) script that
+demonstrates this code. The same approach is used in the `streamlit`
+user interface [`search_index_ui.py`](search_index_ui.py) that can be
+run to graphically see the matched documents as seen below.
 
 ```
 streamlit run search_index_ui.py
@@ -190,9 +191,9 @@ The chain for interaction with the LLM has the following pieces:
   the conversation.
 - The LLM chat interface, `AzureChatOpenAI` in our case.
 
-The `document_chatbot.py` script demonstrates the creation of the full
-retrieval chain and the invokation of the chain from prompt to
-response.  The relevant code is shown here.
+The [`document_chatbot.py`](document_chatbot.py) script demonstrates
+the creation of the full retrieval chain and the invokation of the
+chain from prompt to response.  The relevant code is shown here.
 
 ```
 # Access persisted embeddings and expose through langchain retriever
