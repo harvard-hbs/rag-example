@@ -205,7 +205,7 @@ retriever = db.as_retriever()
 
 # This version is for AzureOpenAI. Change this function to use
 # a different LLM API
-model_name= os.getenv("OPENAI_MODEL_NAME")
+model_name = os.getenv("OPENAI_MODEL_NAME")
 llm = AzureChatOpenAI(temperature=0.5,
                       deployment_name=model_name,
                       verbose=VERBOSE)
