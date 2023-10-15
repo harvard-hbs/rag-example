@@ -32,10 +32,15 @@ abstractions and orchestration on top of the these features (among others):
 The following specifics can be easily changed to other formats,
 models, and providers as needed:
 
-- Domain document format, converter, and splitter: PDF and `PyPDFLoader`
-- Choice of vector embedding provider and model: Huggingface `all-MiniLM-L6-v2`
-- Choice of vector embedding persistence database: Chroma
-- Choice of Large Language Model provider and model: Azure OpenAI GPT-4
+- Domain document format, converter, and splitter: PDF and
+  [`PyPDFLoader`](https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf)
+- Choice of vector embedding provider and model: Huggingface
+  [`all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
+- Choice of vector embedding persistence database:
+  [Chroma](https://python.langchain.com/docs/integrations/vectorstores/chroma)
+- Choice of Large Language Model provider and model: [Azure
+  OpenAI](https://python.langchain.com/docs/integrations/llms/azure_openai)
+  GPT-4
 
 ## Document Indexing
 
