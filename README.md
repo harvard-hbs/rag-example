@@ -186,8 +186,8 @@ The chain for interaction with the LLM has the following pieces:
 - The LLM chat interface, `AzureChatOpenAI` in our case.
 
 The `document_chatbot.py` script demonstrates the creation of the full
-retrieval chain and the invokation of the chain from prompt to response and
-the relevant code is shown here.
+retrieval chain and the invokation of the chain from prompt to
+response.  The relevant code is shown here.
 
 ```
 # Access persisted embeddings and expose through langchain retriever
