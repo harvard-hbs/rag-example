@@ -11,11 +11,16 @@ content into generative AI interactions with large language models
 
 ## Code Listing
 
-- `document_chatbot.py` - Short example of full retrieval chain and query
-- `document_chatbot_ui.py` - A Streamlit application for interacting with retrieval chain
-- `index_documents.py` - Script to generate persistent vector embeddings for source documents
-- `search_index.py` - Short example showing vector embedding document chunk search
-- `search_index_ui.py` - A streamlit application to show matching documents for a query
+- [`document_chatbot.py`](document_chatbot.py) - Short example of full
+  retrieval chain and query
+- [`document_chatbot_ui.py`](document_chatbot_ui.py) - A Streamlit
+  application for interacting with retrieval chain
+- [`index_documents.py`](index_documents.py) - Script to generate
+  persistent vector embeddings for source documents
+- [`search_index.py`](search_index.py) - Short example showing vector
+  embedding document chunk search
+- [`search_index_ui.py`](search_index_ui.py) - A streamlit application
+  to show matching documents for a query
 
 ## LangChain
 
@@ -240,3 +245,7 @@ streamlit run document_chatbot_ui.py
 <kbd>![Image of document chatbot UI](images/document_chatbot_image.png)</kbd>
 
 
+## License
+
+This project is licensed under the MIT License - see the
+[LICENSE](LICENSE) file for details.

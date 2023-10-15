@@ -1,3 +1,10 @@
+"""Index source documents and persist in vector embedding database."""
+
+# Copyright (c) 2023 Brent Benson
+#
+# This file is part of [project-name], licensed under the MIT License.
+# See the LICENSE file in this repository for details.
+
 from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma

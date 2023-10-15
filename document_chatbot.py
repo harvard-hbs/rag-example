@@ -1,4 +1,9 @@
-"""Simplest script for creating retrieval pipeline and invokation."""
+"""Simplest script for creating retrieval pipeline and invoking an LLM."""
+
+# Copyright (c) 2023 Brent Benson
+#
+# This file is part of [project-name], licensed under the MIT License.
+# See the LICENSE file in this repository for details.
 
 import os
 import pprint
