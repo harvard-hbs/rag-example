@@ -48,4 +48,23 @@ pip install -r requirements.txt
 
 3. Configure and test LLM access
 
+The example has been tested against OpenAI and Azure OpenAI LangChain
+interfaces, but should work with any LLM supported by LangChain with a
+chat interface.
+
+The OpenAI setup requires a single API key:
+
+```
+export OPENAI_API_KEY=<your-key>
+```
+
+The Azure OpenAI setup requires additional settings:
+
+```
+export OPENAI_API_KEY=<your-key>
+export OPENAI_API_TYPE=azure
+export OPENAI_API_VERSION=<your-version>
+export OPENAI_API_BASE=<your-api-endpoint>
+export OPENAI_MODEL_NAME=<deployed-model-name>
+```
 
