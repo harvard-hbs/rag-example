@@ -24,7 +24,7 @@ COLLECTION_NAME = "federalist_papers"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 PERSIST_DIR = "doc_index"
 
-# Size of memory window
+# Size of window for buffered window memory
 MEMORY_WINDOW_SIZE = 10
 
 ANSWER_ROLE = "Chatbot"
