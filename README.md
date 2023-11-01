@@ -99,14 +99,19 @@ from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 
-SOURCE_DOCUMENT = "source_documents/5008_Federalist Papers.pdf"
-COLLECTION_NAME = "federalist_papers"
+SOURCE_DOCUMENTS = ["source_documents/5008_Federalist Papers.pdf"]
+COLLECTION_NAME = "doc_index"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 PERSIST_DIR = "doc_index"
 
 def main():
-    docs = pdf_to_chunks(SOURCE_DOCUMENT)
-    db = generate_embed_index(docs, COLLECTION_NAME, PERSIST_DIR)
+    all_docs = []
+    for source_doc in SOURCE_DOCUMENTS:
+        print(source_doc)
+        docs = pdf_to_chunks(source_doc)
+        all_docs = all_docs + docs
+    print("Persisting")
+    db = generate_embed_index(all_docs, COLLECTION_NAME, PERSIST_DIR)
     db.persist()
 
 def pdf_to_chunks(pdf_file):
@@ -143,7 +148,7 @@ match against your document store. Here is some example code:
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 
-COLLECTION_NAME = "federalist_papers"
+COLLECTION_NAME = "doc_index"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 PERSIST_DIR = "doc_index"
 

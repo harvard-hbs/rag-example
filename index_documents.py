@@ -22,7 +22,7 @@ def main():
         docs = pdf_to_chunks(source_doc)
         all_docs = all_docs + docs
     print("Persisting")
-    db = generate_embed_index(docs, COLLECTION_NAME, PERSIST_DIR)
+    db = generate_embed_index(all_docs, COLLECTION_NAME, PERSIST_DIR)
     db.persist()
 
 
