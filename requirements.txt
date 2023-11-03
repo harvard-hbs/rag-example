@@ -3,4 +3,4 @@ sentence-transformers
 chromadb
 streamlit
 openai
-
+pypdf

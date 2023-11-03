@@ -141,7 +141,7 @@ python index_documents.py
 ## Testing Retrieval
 
 The eventual goal is to have the indexed documents searched as part of
-the the LLM interaction, but you can also test how various queries
+the LLM interaction, but you can also test how various queries
 match against your document store. Here is some example code:
 
 ```
