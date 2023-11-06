@@ -27,6 +27,8 @@ content into generative AI interactions with large language models
 1. Clone this repository
 2. Create a Python virtual environment and activate it
 3. Install the requirements - `pip install -r requirements.txt`
+4. Copy the `.env.default` file to `.env` and edit it to set the
+   appropriate values for your environment and use case
 4. Run the document indexing script - `python index_documents.py`
 5. Run a sample of searching the index - `python search_index.py`
 6. Run a sample of searching the index in a web browser - `streamlit run search_index_ui.py`
