@@ -22,6 +22,19 @@ content into generative AI interactions with large language models
 - [`search_index_ui.py`](search_index_ui.py) - A streamlit application
   to show matching documents for a query
 
+### Installation and Sample Run
+
+1. Clone this repository
+2. Create a Python virtual environment and activate it
+3. Install the requirements - `pip install -r requirements.txt`
+4. Copy the `.env.default` file to `.env` and edit it to set the
+   appropriate values for your environment and use case
+4. Run the document indexing script - `python index_documents.py`
+5. Run a sample of searching the index - `python search_index.py`
+6. Run a sample of searching the index in a web browser - `streamlit run search_index_ui.py`
+7. Run the document chatbot - `python document_chatbot.py`
+8. Run the document chatbot in a web browser - `streamlit run document_chatbot_ui.py`
+
 ## LangChain
 
 This project depends on the open source
@@ -43,9 +56,9 @@ models, and providers as needed:
   [`all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
 - Choice of vector embedding persistence database:
   [Chroma](https://python.langchain.com/docs/integrations/vectorstores/chroma)
-- Choice of Large Language Model provider and model: [Azure
-  OpenAI](https://python.langchain.com/docs/integrations/llms/azure_openai)
-  GPT-4
+- Choice of Large Language Model provider and model: 
+  - [Azure OpenAI](https://python.langchain.com/docs/integrations/llms/azure_openai)
+  - [Amazon Bedrock](https://api.python.langchain.com/en/latest/chat_models/langchain.chat_models.bedrock.BedrockChat.html)
 
 ## Document Indexing
 
@@ -141,7 +154,7 @@ python index_documents.py
 ## Testing Retrieval
 
 The eventual goal is to have the indexed documents searched as part of
-the the LLM interaction, but you can also test how various queries
+the LLM interaction, but you can also test how various queries
 match against your document store. Here is some example code:
 
 ```
@@ -194,7 +207,8 @@ The chain for interaction with the LLM has the following pieces:
 - A `ConversationalBufferWindowMemory` that provides a level of
   conversational context so the chatbot can refer to earlier parts of
   the conversation.
-- The LLM chat interface, `AzureChatOpenAI` in our case.
+- The LLM chat interface, `AzureChatOpenAI` or `AmazonBedrock`, depending on what 
+  you configure in the `.env` file (see `.env.default` for example).
 
 The [`document_chatbot.py`](document_chatbot.py) script demonstrates
 the creation of the full retrieval chain and the invokation of the

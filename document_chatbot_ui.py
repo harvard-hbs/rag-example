@@ -1,6 +1,16 @@
 """
     Interactive UI running against a large language model with
     retrieval-augmented generation and memory.
+
+    Usage: streamlit run document_chatbot_ui.py
+
+    This will open your browser to the Streamlit UI.
+    Press Ctrl-C in the terminal to stop the server.
+
+    Prerequisites:
+    * Install the python requirements
+    * Setup .env file from .env.default
+    * Run index_documents.py to create the document index
 """
 
 # Copyright (c) 2023 Brent Benson
@@ -9,11 +19,16 @@
 # See the LICENSE file in this repository for details.
 
 
-import streamlit as st
 import os
 
+import streamlit as st
+from dotenv import load_dotenv
+
+# Load the environment variables from the .env file
+load_dotenv()
+
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.chat_models import AzureChatOpenAI
+from langchain.chat_models import AzureChatOpenAI, BedrockChat
 from langchain.vectorstores import Chroma
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferWindowMemory
@@ -48,13 +63,27 @@ def load_embeddings():
 
 @st.cache_resource
 def load_llm():
-    # This version is for AzureOpenAI. Change this function to use
-    # a different LLM API
-    model_name = os.getenv("OPENAI_MODEL_NAME")
-    model = AzureChatOpenAI(
-        temperature=0.5, deployment_name=model_name, verbose=VERBOSE
-    )
-    return model
+    # Check which environment variables are set and use the appropriate LLM
+    openai_model_name = os.getenv("OPENAI_MODEL_NAME")
+    aws_credential_profile_name = os.getenv("AWS_CREDENTIAL_PROFILE_NAME")
+    aws_bedrock_model_name = os.getenv("AWS_BEDROCK_MODEL_NAME")
+    llm = None
+    if openai_model_name:
+        print("Using Azure for language model.")
+        llm = AzureChatOpenAI(
+            temperature=0.5, deployment_name=openai_model_name, verbose=VERBOSE
+        )
+    elif aws_credential_profile_name and aws_bedrock_model_name:
+        print("Using Amazon Bedrock for language model.")
+        llm = BedrockChat(
+            credentials_profile_name=aws_credential_profile_name,
+            model_id=aws_bedrock_model_name,
+            verbose=VERBOSE,
+        )
+    else:
+        # One could add additional LLMs here
+        raise EnvironmentError("No language model environment variables found.")
+    return llm
 
 
 @st.cache_resource

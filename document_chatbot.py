@@ -7,9 +7,13 @@
 
 import os
 import pprint
+from dotenv import load_dotenv
+
+# Load the environment variables from the .env file
+load_dotenv()
 
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.chat_models import AzureChatOpenAI
+from langchain.chat_models import AzureChatOpenAI, BedrockChat
 from langchain.vectorstores import Chroma
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferWindowMemory
@@ -27,6 +31,11 @@ MEMORY_WINDOW_SIZE = 10
 
 
 def main():
+    # Check which environment variables are set and use the appropriate LLM
+    openai_model_name = os.getenv("OPENAI_MODEL_NAME")
+    aws_credential_profile_name = os.getenv("AWS_CREDENTIAL_PROFILE_NAME")
+    aws_bedrock_model_name = os.getenv("AWS_BEDROCK_MODEL_NAME")
+
     # Access persisted embeddings and expose through langchain retriever
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
     db = Chroma(
@@ -36,10 +45,21 @@ def main():
     )
     retriever = db.as_retriever()
 
-    # This version is for AzureOpenAI. Change this function to use
-    # a different LLM API
-    model_name = os.getenv("OPENAI_MODEL_NAME")
-    llm = AzureChatOpenAI(temperature=0.5, deployment_name=model_name, verbose=VERBOSE)
+    if openai_model_name:
+        print("Using Azure for language model.")
+        llm = AzureChatOpenAI(
+            temperature=0.5, deployment_name=openai_model_name, verbose=VERBOSE
+        )
+    elif aws_credential_profile_name and aws_bedrock_model_name:
+        print("Using Amazon Bedrock for language model.")
+        llm = BedrockChat(
+            credentials_profile_name=aws_credential_profile_name,
+            model_id=aws_bedrock_model_name,
+            verbose=VERBOSE,
+        )
+    else:
+        # One could add additional LLMs here
+        raise EnvironmentError("No language model environment variables found.")
 
     # Establish a memory buffer for conversational continuity
     memory = ConversationBufferWindowMemory(
