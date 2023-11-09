@@ -43,7 +43,6 @@ VERBOSE = False
 # Details of persisted embedding store index
 COLLECTION_NAME = "doc_index"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-PERSIST_DIR = "doc_index"
 
 # Size of window for buffered window memory
 MEMORY_WINDOW_SIZE = 10
@@ -88,13 +87,24 @@ def load_llm():
 
 @st.cache_resource
 def get_embed_retriever():
+    db = get_embed_db(embeddings)
+    retriever = db.as_retriever()
+    return retriever
+
+
+def get_embed_db(embeddings):
+    chroma_persist_dir = os.getenv("CHROMA_PERSIST_DIR")
+    db = get_chroma_db(embeddings, chroma_persist_dir)
+    return db
+
+
+def get_chroma_db(embeddings, persist_dir):
     db = Chroma(
         embedding_function=embeddings,
         collection_name=COLLECTION_NAME,
-        persist_directory=PERSIST_DIR,
+        persist_directory=persist_dir,
     )
-    retriever = db.as_retriever()
-    return retriever
+    return db
 
 
 # Shared/cached globals

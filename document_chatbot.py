@@ -24,7 +24,6 @@ VERBOSE = False
 # Details of persisted embedding store index
 COLLECTION_NAME = "doc_index"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-PERSIST_DIR = "doc_index"
 
 # Size of window for buffered window memory
 MEMORY_WINDOW_SIZE = 10
@@ -38,11 +37,7 @@ def main():
 
     # Access persisted embeddings and expose through langchain retriever
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
-    db = Chroma(
-        embedding_function=embeddings,
-        collection_name=COLLECTION_NAME,
-        persist_directory=PERSIST_DIR,
-    )
+    db = get_embed_db(embeddings)
     retriever = db.as_retriever()
 
     if openai_model_name:
@@ -85,6 +80,21 @@ def main():
     )
     query_response = query_chain({"question": prompt})
     pprint.pprint(query_response)
+
+
+def get_embed_db(embeddings):
+    chroma_persist_dir = os.getenv("CHROMA_PERSIST_DIR")
+    db = get_chroma_db(embeddings, chroma_persist_dir)
+    return db
+
+
+def get_chroma_db(embeddings, persist_dir):
+    db = Chroma(
+        embedding_function=embeddings,
+        collection_name=COLLECTION_NAME,
+        persist_directory=persist_dir,
+    )
+    return db
 
 
 if __name__ == "__main__":
