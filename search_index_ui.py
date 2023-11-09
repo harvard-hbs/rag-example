@@ -15,7 +15,7 @@ from streamlit.logger import get_logger
 
 logger = get_logger(__name__)
 
-COLLECTION_NAME = "federalist_papers"
+COLLECTION_NAME = "doc_index"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 PERSIST_DIR = "doc_index"
 

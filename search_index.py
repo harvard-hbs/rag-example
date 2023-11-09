@@ -8,7 +8,7 @@
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 
-COLLECTION_NAME = "federalist_papers"
+COLLECTION_NAME = "doc_index"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 PERSIST_DIR = "doc_index"
 
