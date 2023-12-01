@@ -143,9 +143,9 @@ def generate_embed_index(docs, collection_name, persist_dir):
 
 Running the [`index_documents.py`](index_documents.py) program will
 create the `doc_index` directory with persisted vector
-embeddings. These embeddings are already created in this repository,
-but can be deleted and re-created if you want to rerun the indexing or
-index a different set of documents.
+embeddings when using Chroma or persist to the vector database
+specified in your environment settings. These embeddings must be
+created before executing the search or chatbot scripts and UIs.
 
 ```
 python index_documents.py

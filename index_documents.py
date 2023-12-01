@@ -15,6 +15,7 @@ from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.vectorstores import OpenSearchVectorSearch
+from langchain.vectorstores.pgvector import PGVector
 
 SOURCE_DOCUMENTS = ["source_documents/5008_Federalist Papers.pdf"]
 COLLECTION_NAME = "doc_index"
@@ -22,14 +23,21 @@ EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
 
 def main():
+    print("Ingesting...")
+    all_docs = ingest_docs(SOURCE_DOCUMENTS)
+    print("Persisting...")
+    db = generate_embed_index(all_docs)
+    print("Done.")
+
+    
+def ingest_docs(source_documents):
     all_docs = []
-    for source_doc in SOURCE_DOCUMENTS:
+    for source_doc in source_documents:
         print(source_doc)
         docs = pdf_to_chunks(source_doc)
         all_docs = all_docs + docs
-    print("Persisting")
-    db = generate_embed_index(all_docs)
-
+    return all_docs
+    
 
 def pdf_to_chunks(pdf_file):
     loader = PyPDFLoader(pdf_file)
@@ -41,10 +49,13 @@ def generate_embed_index(docs):
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
     chroma_persist_dir = os.getenv("CHROMA_PERSIST_DIR")
     opensearch_url = os.getenv("OPENSEARCH_URL")
+    postgres_conn = os.getenv("POSTGRES_CONNECTION")
     if chroma_persist_dir:
         db = create_index_chroma(docs, embeddings, chroma_persist_dir)
     elif opensearch_url:
         db = create_index_opensearch(docs, embeddings, opensearch_url)
+    elif postgres_conn:
+        db = create_index_postgres(docs, embeddings, postgres_conn)
     else:
         # You can add additional vector stores here
         raise EnvironmentError("No vector store environment variables found.")
@@ -56,10 +67,11 @@ def create_index_chroma(docs, embeddings, persist_dir):
         documents=docs,
         embedding=embeddings,
         collection_name=COLLECTION_NAME,
-        persist_directory=persist_dir
+        persist_directory=persist_dir,
     )
     db.persist()
     return db
+
 
 def create_index_opensearch(docs, embeddings, url):
     username = os.getenv("OPENSEARCH_USERNAME")
@@ -70,12 +82,23 @@ def create_index_opensearch(docs, embeddings, url):
         index_name=COLLECTION_NAME,
         opensearch_url=url,
         http_auth=(username, password),
-        use_ssl = False,
-        verify_certs = False,
-        ssl_assert_hostname = False,
-        ssl_show_warn = False,
+        use_ssl=False,
+        verify_certs=False,
+        ssl_assert_hostname=False,
+        ssl_show_warn=False,
     )
     return db
+
+
+def create_index_postgres(docs, embeddings, connection_string):
+    db = PGVector.from_documents(
+        docs,
+        embeddings,
+        collection_name=COLLECTION_NAME,
+        connection_string=connection_string,
+    )
+    return db
+
 
 if __name__ == "__main__":
     main()

@@ -14,6 +14,7 @@ load_dotenv()
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.vectorstores import OpenSearchVectorSearch
+from langchain.vectorstores.pgvector import PGVector
 
 COLLECTION_NAME = "doc_index"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
@@ -44,10 +45,13 @@ def main():
 def get_embed_db(embeddings):
     chroma_persist_dir = os.getenv("CHROMA_PERSIST_DIR")
     opensearch_url = os.getenv("OPENSEARCH_URL")
+    postgres_conn = os.getenv("POSTGRES_CONNECTION")
     if chroma_persist_dir:
         db = get_chroma_db(embeddings, chroma_persist_dir)
     elif opensearch_url:
         db = get_opensearch_db(embeddings, opensearch_url)
+    elif postgres_conn:
+        db = get_postgres_db(embeddings, postgres_conn)
     else:
         # You can add additional vector stores here
         raise EnvironmentError("No vector store environment variables found.")
@@ -75,6 +79,15 @@ def get_opensearch_db(embeddings, url):
         verify_certs=False,
         ssl_assert_hostname=False,
         ssl_show_warn=False,
+    )
+    return db
+
+
+def get_postgres_db(embeddings, connection_string):
+    db = PGVector(
+        embedding_function=embeddings,
+        collection_name=COLLECTION_NAME,
+        connection_string=connection_string,
     )
     return db
 
