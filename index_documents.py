@@ -11,7 +11,9 @@ from dotenv import load_dotenv
 # Load the environment variables from the .env file
 load_dotenv()
 
+from transformers import AutoTokenizer
 from langchain.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.vectorstores import OpenSearchVectorSearch
@@ -29,7 +31,7 @@ def main():
     db = generate_embed_index(all_docs)
     print("Done.")
 
-    
+
 def ingest_docs(source_documents):
     all_docs = []
     for source_doc in source_documents:
@@ -37,11 +39,20 @@ def ingest_docs(source_documents):
         docs = pdf_to_chunks(source_doc)
         all_docs = all_docs + docs
     return all_docs
-    
+
 
 def pdf_to_chunks(pdf_file):
+    # Use the tokenizer from the embedding model to determine the chunk size
+    # so that chunks don't get truncated.
+    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+    text_splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
+        tokenizer,
+        separators=["\n \n", "\n\n", "\n", " ", ""],
+        chunk_size=512,
+        chunk_overlap=0,
+    )
     loader = PyPDFLoader(pdf_file)
-    docs = loader.load_and_split()
+    docs = loader.load_and_split(text_splitter)
     return docs
 
 
